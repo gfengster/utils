@@ -1,0 +1,37 @@
+#! /bin/bash
+
+line=$(cpufreq-info | grep "available cpufreq governors" | uniq  | gawk -F ":" '{print$2}' | sed 's/,//g')
+
+echo "Available governor are $line"
+
+ncpu=$(cpufreq-info | grep "available cpufreq governors" | wc -l)
+
+governor='powersave'
+
+if [ -n "$1" ]
+then
+	if [[ $line =~ $1 ]]
+	then
+		governor=$1
+	else
+		echo "$1 is invalid. set to powersave"
+	fi
+fi
+
+echo "Set to $governor"
+
+for cpu in `seq 0 $((ncpu-1))`
+do 
+	sudo cpufreq-set -g $governor -c $cpu
+done
+
+
+#sudo cpufreq-set -g $governor -c 0
+#sudo cpufreq-set -g $governor -c 1
+#sudo cpufreq-set -g $governor -c 2
+#sudo cpufreq-set -g $governor -c 3
+#sudo cpufreq-set -g performance -c 4
+#sudo cpufreq-set -g performance -c 5
+#sudo cpufreq-set -g performance -c 6
+#sudo cpufreq-set -g performance -c 7
+
